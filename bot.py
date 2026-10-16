@@ -14,6 +14,8 @@ from aiogram.types import (
 )
 from aiogram.enums import ChatMemberStatus
 from aiogram.exceptions import TelegramBadRequest
+from aiogram.client.session.aiohttp import AiohttpSession
+from aiogram.client.telegram import TelegramAPIServer
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import aiosqlite
 
@@ -22,13 +24,17 @@ BOT_TOKEN = os.getenv("BOT_TOKEN") or os.getenv("TELEGRAM_BOT_TOKEN")
 if not BOT_TOKEN:
     raise ValueError("Не найден BOT_TOKEN! Добавь переменную окружения на Bothost.")
 
+# API сервер AlightGram (gramsrv)
+API_BASE = os.getenv("BOT_API_BASE_URL", "http://2.27.200.20:8081")
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
-bot = Bot(token=BOT_TOKEN)
+session = AiohttpSession(api=TelegramAPIServer.from_base(API_BASE))
+bot = Bot(token=BOT_TOKEN, session=session)
 dp = Dispatcher()
 router = Router()
 dp.include_router(router)
